@@ -1,0 +1,31 @@
+{
+  "commands_approved": 1,
+  "commands_executed": 1,
+  "commands_proposed": 2,
+  "commands_rejected": 0,
+  "completed": true,
+  "computed_at": "2026-11-03T04:54:24.876985+00:00",
+  "corrected_retries": 0,
+  "escalations": 0,
+  "event_count": 44,
+  "insufficient_data": [
+    "e2e latency, approval wait time, and MTTR not computed (no duration spans in event stream)"
+  ],
+  "notes": [
+    "recovery_success_rate uses retry/scope events minus escalations; not a precise per-attempt attribution"
+  ],
+  "recovery_decisions": 1,
+  "recovery_success_rate": 1.0,
+  "recovery_successes": 1,
+  "repeated_failure_signals": 0,
+  "replans": 0,
+  "retries": 0,
+  "safe_stops": 0,
+  "same_operation_retries": 0,
+  "schema_version": 1,
+  "scope_reductions": 1,
+  "task_failures": 1,
+  "task_finishes": 8,
+  "task_starts": 10,
+  "workflow_id": "workflow_f35852877272"
+}

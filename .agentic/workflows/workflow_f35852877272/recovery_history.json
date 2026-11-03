@@ -1,0 +1,41 @@
+{
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "corrective_action": "Split the task into smaller dependent subtasks or reduce output size.",
+      "decision": {
+        "confidence": 1.0,
+        "dependency_graph_changes": true,
+        "evidence": [
+          "failure_category=output_truncated",
+          "error=[failure_category=truncated_response] Developer agent failed for t5 (Write pytest test suite): Model response truncated (stop_reason=max_tokens)",
+          "prior_recovery_attempts=0"
+        ],
+        "failure_category": "output_truncated",
+        "failure_explanation": "[failure_category=truncated_response] Developer agent failed for t5 (Write pytest test suite): Model response truncated (stop_reason=max_tokens)",
+        "human_approval_required": false,
+        "inputs_must_change": true,
+        "llm_may_approve": false,
+        "proposed_corrective_action": "Split the task into smaller dependent subtasks or reduce output size.",
+        "rationale": "Truncated/oversized output; reduce generation scope (1/2). [failure_category=truncated_response] Developer agent failed for t5 (Write pytest test suite): Model response truncated (stop_reason=max_tokens)",
+        "scope_changes": true,
+        "strategy": "reduce_scope"
+      },
+      "dependency_graph_changed": true,
+      "failure_category": "output_truncated",
+      "failure_details": "[failure_category=truncated_response] Developer agent failed for t5 (Write pytest test suite): Model response truncated (stop_reason=max_tokens)",
+      "human_approval_required": false,
+      "inputs_changed": true,
+      "outcome": "pending",
+      "recovery_id": "rec_52992675b2d2",
+      "scope_changed": true,
+      "strategy": "reduce_scope",
+      "strategy_rationale": "Truncated/oversized output; reduce generation scope (1/2). [failure_category=truncated_response] Developer agent failed for t5 (Write pytest test suite): Model response truncated (stop_reason=max_tokens)",
+      "task_id": "t5",
+      "timestamp": "2026-11-03T04:38:04.822669Z",
+      "workflow_id": "workflow_f35852877272"
+    }
+  ],
+  "schema_version": 1,
+  "workflow_id": "workflow_f35852877272"
+}

@@ -1,0 +1,24 @@
+{
+  "task_id": "t3",
+  "attempt": 1,
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "stop_reason": "tool_use",
+  "token_usage": {
+    "input_tokens": 11342,
+    "output_tokens": 6201
+  },
+  "response_type": "structured_json",
+  "parsing_outcome": "ok",
+  "validation_outcome": "ok",
+  "failure_category": null,
+  "retry_decision": "commit",
+  "recorded_at": "2026-11-03T04:35:40.599369+00:00",
+  "extra": {
+    "batch_index": 0,
+    "files": [
+      "app/repository.py",
+      "app/services.py"
+    ]
+  }
+}

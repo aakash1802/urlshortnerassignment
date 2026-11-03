@@ -1,0 +1,23 @@
+{
+  "task_id": "t7",
+  "attempt": 1,
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "stop_reason": "tool_use",
+  "token_usage": {
+    "input_tokens": 15890,
+    "output_tokens": 3548
+  },
+  "response_type": "structured_json",
+  "parsing_outcome": "ok",
+  "validation_outcome": "ok",
+  "failure_category": null,
+  "retry_decision": "commit",
+  "recorded_at": "2026-11-03T04:38:27.534736+00:00",
+  "extra": {
+    "written": [
+      "README.md"
+    ],
+    "summary": "Wrote a single README.md covering setup, running, env config, auth behavior (including no API key configured), endpoints with curl examples and responses, error format, running tests, assumptions, and out-of-scope/future items."
+  }
+}

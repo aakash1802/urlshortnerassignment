@@ -1,0 +1,24 @@
+{
+  "task_id": "t5_s2",
+  "attempt": 2,
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "stop_reason": "tool_use",
+  "token_usage": {
+    "input_tokens": 16944,
+    "output_tokens": 4954
+  },
+  "response_type": "structured_json",
+  "parsing_outcome": "ok",
+  "validation_outcome": "ok",
+  "failure_category": null,
+  "retry_decision": "continue",
+  "recorded_at": "2026-11-03T04:40:38.150442+00:00",
+  "extra": {
+    "batch_index": 0,
+    "files": [
+      "tests/support.py",
+      "tests/test_flows.py"
+    ]
+  }
+}

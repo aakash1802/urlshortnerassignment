@@ -1,0 +1,24 @@
+{
+  "task_id": "t5_s2",
+  "attempt": 3,
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "stop_reason": "tool_use",
+  "token_usage": {
+    "input_tokens": 16935,
+    "output_tokens": 6952
+  },
+  "response_type": "structured_json",
+  "parsing_outcome": "ok",
+  "validation_outcome": "ok",
+  "failure_category": null,
+  "retry_decision": "commit",
+  "recorded_at": "2026-11-03T04:41:19.530331+00:00",
+  "extra": {
+    "batch_index": 1,
+    "files": [
+      "tests/test_auth_and_errors.py",
+      "tests/test_concurrency_and_collisions.py"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "t5",
+  "attempt": 1,
+  "provider": "unknown",
+  "model": "",
+  "stop_reason": null,
+  "token_usage": {},
+  "response_type": "error",
+  "parsing_outcome": "failed",
+  "validation_outcome": "n/a",
+  "failure_category": "truncated_response",
+  "retry_decision": "reduce_scope_and_retry",
+  "recorded_at": "2026-11-03T04:37:18.054628+00:00",
+  "extra": {
+    "batch_index": 0,
+    "regen": 0
+  }
+}

@@ -1,0 +1,110 @@
+# URL Shortening Service with Click Analytics and Expiration
+
+- Specification id: `spec_28dc61c510`
+- Workflow: `workflow_f35852877272`
+- Status: `spec_approved`
+- Created: `2026-11-03T04:31:47.245929+00:00`
+
+## Summary
+
+A simple, maintainable REST service that accepts long http/https URLs and returns unique short codes with full short URLs. Visiting a short URL issues an HTTP 302 redirect to the original URL and atomically increments a click counter. The service supports optional expiration (absolute timestamp or TTL), soft deletion/deactivation, and a stats API returning click counts and metadata. It returns consistent JSON errors for invalid input and for unknown, expired, or deactivated codes. Technology choices are made using sensible defaults (Python, FastAPI, SQLite via SQLAlchemy) and documented as assumptions.
+
+## In scope
+
+- REST endpoint to create short URLs with URL validation
+- Unique short code generation with collision handling
+- Public redirect endpoint (HTTP 302)
+- Atomic click counting and last-accessed tracking
+- Stats/analytics endpoint returning click count and metadata
+- Optional expiration via expires_at or ttl_seconds with lazy evaluation
+- Soft delete/deactivation endpoint (idempotent)
+- Consistent JSON error handling for invalid, unknown, expired, and deactivated cases
+- Simple API-key protection for management endpoints
+- Environment-based configuration
+- Automated tests and README documentation
+
+## Out of scope
+
+- User accounts, registration, login, and per-user ownership of URLs
+- Custom aliases or vanity short codes
+- Per-click event logs, referrer, geo, device, or time-series analytics
+- Updating a URL's destination or expiration after creation
+- Hard deletion or background cleanup of expired records
+- Rate limiting, CAPTCHA, and malicious-URL/phishing scanning
+- Deduplication of identical long URLs
+- Distributed or horizontally scaled deployment, caching layers, and CDN setup
+- Admin UI or front-end web interface
+- QR code generation
+
+## Functional requirements
+
+- FR1: POST /api/urls accepts a JSON body with a required 'url' field and optional expiration ('expires_at' as an ISO-8601 UTC timestamp OR 'ttl_seconds' as a positive integer), and creates a short URL record.
+- FR2: URL validation: the URL must be well-formed, use the http or https scheme, include a host, and not exceed 2048 characters. Invalid URLs are rejected with a 4xx (400/422) JSON error.
+- FR3: Expiration validation: 'expires_at' must be in the future and 'ttl_seconds' must be a positive integer; providing both is rejected; invalid values return a 4xx JSON error. If neither is provided, the URL does not expire.
+- FR4: Each created short URL receives a unique random base62 short code of 7 characters, enforced by a database unique constraint with retry on collision. Custom aliases are not supported.
+- FR5: The creation response (HTTP 201) returns at least: short_code, short_url (built from the configurable base URL), original_url, created_at, and expires_at (null if none).
+- FR6: Submitting the same long URL multiple times creates a new, independent short URL each time.
+- FR7: GET /{short_code} for an active, non-expired code responds with HTTP 302 and a Location header set to the original URL.
+- FR8: Each successful redirect atomically increments the click count for that short URL and updates last_accessed_at.
+- FR9: Clicks are not counted for unknown, expired, or deactivated codes.
+- FR10: GET /api/urls/{short_code}/stats returns short_code, original_url, click_count, created_at, expires_at, is_active, and last_accessed_at (nullable).
+- FR11: DELETE /api/urls/{short_code} soft-deactivates the short URL (is_active=false) and returns 204. The operation is idempotent for existing codes and returns 404 for unknown codes.
+- FR12: Redirect behavior for non-redirectable codes: unknown code -> 404; deactivated/deleted code -> 404; expired code -> 410 Gone. Expiry is evaluated lazily at request time.
+- FR13: Stats endpoint behavior: unknown code -> 404. Stats for expired or deactivated codes remain retrievable, and the response reflects their state (is_active, expires_at).
+- FR14: Management endpoints (DELETE, and stats) require a configurable API key supplied via a request header (e.g. X-API-Key). Missing or invalid keys return 401/403. If no API key is configured, the behavior is documented. The public redirect and URL creation endpoints are unauthenticated unless otherwise documented.
+- FR15: All API errors use a consistent JSON format containing at least an error code and a human-readable message, and never expose internal stack traces.
+
+## Non-functional requirements
+
+- Code is organized with clear separation of concerns: API/routing layer, service/business logic, and persistence layer.
+- The short_code column is uniquely indexed so redirect lookups are fast indexed lookups.
+- Click counting is concurrency-safe using an atomic database increment (e.g. UPDATE ... SET click_count = click_count + 1), not read-modify-write in application code.
+- Short code generation uses a cryptographically suitable random source (e.g. the secrets module) and is collision-safe through a unique constraint plus bounded retries.
+- Database access uses an ORM or parameterized queries only.
+- Configuration (base URL, database URL, API key, max URL length, default code length) is provided via environment variables with sensible defaults.
+- Persistence is abstracted so that SQLite can be replaced by PostgreSQL without changing business logic.
+- Automated pytest tests cover core flows and error cases.
+- A README documents setup, running, configuration, API endpoints with examples, and all assumptions.
+- All timestamps are stored and returned in UTC ISO-8601 format.
+
+## Acceptance criteria
+
+- Given a valid http/https URL, POST /api/urls returns 201 with a 7-character base62 short_code and a short_url starting with the configured base URL.
+- Given a malformed URL, a non-http(s) scheme (e.g. ftp://, javascript:), a missing host, or a URL longer than 2048 characters, POST /api/urls returns a 4xx JSON error and no record is created.
+- Given both expires_at and ttl_seconds, a past expires_at, or a non-positive ttl_seconds, POST /api/urls returns a 4xx JSON error.
+- Given a valid ttl_seconds, the response contains an expires_at equal to approximately creation time plus the TTL.
+- Posting the same long URL twice returns two different short codes.
+- GET /{short_code} for an active code returns 302 with Location equal to the original URL.
+- After N successful redirects, GET /api/urls/{short_code}/stats returns click_count == N and a non-null last_accessed_at.
+- Concurrent redirects to the same code (e.g. 50 parallel requests) result in an exact click_count equal to the number of successful redirects.
+- GET /{short_code} for an unknown code returns 404 with a JSON error body.
+- GET /{short_code} for an expired code returns 410 with a JSON error body and does not increment click_count.
+- DELETE /api/urls/{short_code} with a valid API key returns 204; a subsequent GET /{short_code} returns 404 and does not increment click_count.
+- Calling DELETE a second time on the same code returns 204 (idempotent); calling DELETE on an unknown code returns 404.
+- GET /api/urls/{short_code}/stats for an unknown code returns 404; for a deactivated or expired code it returns 200 with is_active/expires_at reflecting its state.
+- DELETE and stats requests without a valid API key (when a key is configured) return 401/403 and make no changes.
+- All error responses share the same JSON structure and contain no stack traces.
+- The automated test suite passes and covers creation, validation, redirect, click counting, stats, expiration, deactivation, unknown codes, and auth on management endpoints.
+- The README documents setup, configuration, endpoints, and assumptions.
+
+## Assumptions
+
+- Stack: Python with FastAPI and SQLite via SQLAlchemy; persistence layer is swappable for PostgreSQL later.
+- Base URL for short links is configurable via environment variable (default http://localhost:8000).
+- Short codes are random base62, 7 characters long, with a unique constraint and retry on collision.
+- Only http and https URLs are accepted; maximum URL length is 2048 characters.
+- Expiration is optional, set at creation time only, and cannot be modified afterwards in this version.
+- Expiry is evaluated lazily at request time; no background cleanup job is needed.
+- Deletion is a soft deactivation (is_active=false); deactivated codes are treated as not found (404) on redirect.
+- Redirects use HTTP 302 so every click reaches the service and can be counted.
+- Clicks are tracked as an atomic counter on the URL record plus a last_accessed_at timestamp; per-click event logs, referrer, and geo data are not recorded.
+- No user accounts or per-user ownership; management endpoints (delete, stats) are protected by a single configurable API key header, and production deployments may additionally place them behind a gateway.
+- Rate limiting, malicious-URL scanning, and custom aliases are not included and are noted as future improvements.
+- Tests are written with pytest using a temporary/in-memory database.
+
+## Constraints
+
+- Prefer simplicity and maintainability over scale-out architecture.
+- Routine technical decisions are made by the implementer and documented as assumptions rather than raised as questions.
+- Only the listed endpoints and behaviors are in scope; no additional business-specific requirements apply.
+- Redirect endpoint must remain publicly accessible without authentication.

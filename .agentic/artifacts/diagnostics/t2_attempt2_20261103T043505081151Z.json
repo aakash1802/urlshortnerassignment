@@ -1,0 +1,27 @@
+{
+  "task_id": "t2",
+  "attempt": 2,
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "stop_reason": "tool_use",
+  "token_usage": {
+    "input_tokens": 6042,
+    "output_tokens": 6779
+  },
+  "response_type": "structured_json",
+  "parsing_outcome": "ok",
+  "validation_outcome": "ok",
+  "failure_category": null,
+  "retry_decision": "commit",
+  "recorded_at": "2026-11-03T04:35:05.081118+00:00",
+  "extra": {
+    "batch_index": 1,
+    "files": [
+      "app/config.py",
+      "app/database.py",
+      "app/models.py",
+      "app/errors.py",
+      "app/main.py"
+    ]
+  }
+}

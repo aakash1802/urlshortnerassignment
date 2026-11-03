@@ -1,0 +1,177 @@
+{
+  "created_at": "2026-11-03T04:33:11.307509Z",
+  "id": "plan_f869d00cb4",
+  "schema_version": 1,
+  "specification_id": "spec_28dc61c510",
+  "summary": "Plan for a FastAPI + SQLAlchemy/SQLite URL shortener with click analytics, expiration, soft delete and API-key-protected management endpoints. Starts with architecture and scaffolding, then builds persistence and service logic, then the API layer. Tests are authored by a developer task and run by a testing task, with documentation written in parallel.",
+  "tasks": [
+    {
+      "acceptance_criteria": [
+        "Design notes define layers: API, service, persistence, config, errors",
+        "Data model and unique index on short_code are specified",
+        "Error response format and status code mapping (400/422, 401/403, 404, 410) are defined",
+        "Atomic increment and collision-retry strategies are described",
+        "Behavior when no API key is configured is stated explicitly",
+        "Environment variables and defaults are listed"
+      ],
+      "agent": "architecture",
+      "created_at": "2026-11-03T04:33:11.307371Z",
+      "depends_on": [],
+      "description": "Produce design notes covering the layered structure (api/routes, services, repositories/persistence, config, errors), the data model for the urls table (id, short_code unique-indexed, original_url, created_at, expires_at, is_active, click_count, last_accessed_at, all UTC), the unified error JSON format ({error: {code, message}}), the atomic UPDATE-based click increment strategy, the base62 code generation with bounded retry on unique-constraint collision, the lazy expiry evaluation rules, the API-key dependency behavior (including when no key is configured), and the environment variable configuration list. Note how the repository abstraction keeps SQLite swappable for PostgreSQL.",
+      "error": null,
+      "id": "t1",
+      "input_refs": [],
+      "max_retries": 1,
+      "name": "Design architecture and module layout",
+      "output_refs": [],
+      "recovery_feedback": null,
+      "retry_count": 0,
+      "status": "pending",
+      "updated_at": "2026-11-03T04:33:11.307374Z"
+    },
+    {
+      "acceptance_criteria": [
+        "App starts with uvicorn and creates tables on startup",
+        "Settings are read from environment variables with sensible defaults",
+        "ShortURL model has unique index on short_code and all required columns",
+        "Validation, HTTP, and unexpected exceptions all produce the consistent JSON error shape with no stack traces"
+      ],
+      "agent": "developer",
+      "created_at": "2026-11-03T04:33:11.307395Z",
+      "depends_on": [
+        "t1"
+      ],
+      "description": "Create the project structure, requirements file, environment-based settings (BASE_URL default http://localhost:8000, DATABASE_URL, API_KEY, MAX_URL_LENGTH=2048, CODE_LENGTH=7), SQLAlchemy engine/session setup, the ShortURL ORM model with unique-indexed short_code, the FastAPI app factory, and global exception handlers that return the consistent JSON error format without stack traces (including request validation errors).",
+      "error": null,
+      "id": "t2",
+      "input_refs": [],
+      "max_retries": 2,
+      "name": "Scaffold project, configuration, DB setup and error handling",
+      "output_refs": [],
+      "recovery_feedback": null,
+      "retry_count": 0,
+      "status": "pending",
+      "updated_at": "2026-11-03T04:33:11.307396Z"
+    },
+    {
+      "acceptance_criteria": [
+        "Short codes are 7-character base62 generated with the secrets module with bounded retries on collision",
+        "Click increment is a single atomic SQL UPDATE, not read-modify-write",
+        "Expired codes raise a Gone error and deactivated or unknown codes raise NotFound, without incrementing clicks",
+        "Deactivation is idempotent for existing codes and raises NotFound for unknown codes",
+        "Business logic does not depend on SQLite-specific features"
+      ],
+      "agent": "developer",
+      "created_at": "2026-11-03T04:33:11.307407Z",
+      "depends_on": [
+        "t2"
+      ],
+      "description": "Implement the persistence repository (create, get by code, atomic click increment via UPDATE click_count = click_count + 1 with last_accessed_at update gated on active and non-expired state, deactivate) and the service layer: URL validation (http/https, host required, max length), expiration validation (expires_at in the future, ttl_seconds positive, not both), secrets-based 7-char base62 code generation with bounded retry on IntegrityError, lazy expiry evaluation, redirect resolution (404 unknown/deactivated, 410 expired, no count on failure), idempotent soft delete, and stats retrieval. All timestamps are UTC.",
+      "error": null,
+      "id": "t3",
+      "input_refs": [],
+      "max_retries": 2,
+      "name": "Implement repository and service layer",
+      "output_refs": [],
+      "recovery_feedback": null,
+      "retry_count": 0,
+      "status": "pending",
+      "updated_at": "2026-11-03T04:33:11.307408Z"
+    },
+    {
+      "acceptance_criteria": [
+        "All four endpoints behave per the specification, including status codes and response fields",
+        "Stats and DELETE return 401/403 without a valid X-API-Key when a key is configured and make no changes",
+        "Redirect and create endpoints are unauthenticated",
+        "Error responses use the consistent JSON format"
+      ],
+      "agent": "developer",
+      "created_at": "2026-11-03T04:33:11.307418Z",
+      "depends_on": [
+        "t3"
+      ],
+      "description": "Implement POST /api/urls (201 response with short_code, short_url, original_url, created_at, expires_at), GET /{short_code} (302 with Location), GET /api/urls/{short_code}/stats, and DELETE /api/urls/{short_code} (204). Add an X-API-Key dependency protecting stats and DELETE, returning 401/403 for a missing or invalid key; create and redirect remain public. Register routes so that /{short_code} does not shadow /api routes.",
+      "error": null,
+      "id": "t4",
+      "input_refs": [],
+      "max_retries": 2,
+      "name": "Implement API routes and API-key authentication",
+      "output_refs": [],
+      "recovery_feedback": null,
+      "retry_count": 0,
+      "status": "pending",
+      "updated_at": "2026-11-03T04:33:11.307418Z"
+    },
+    {
+      "acceptance_criteria": [
+        "Tests cover creation, validation, redirect, click counting, stats, expiration, deactivation, unknown codes, and auth",
+        "A concurrency test verifies an exact click count under parallel redirects",
+        "Tests use an isolated temporary database and do not depend on external services",
+        "All error responses are asserted to share the same JSON structure"
+      ],
+      "agent": "developer",
+      "created_at": "2026-11-03T04:33:11.307427Z",
+      "depends_on": [
+        "t4"
+      ],
+      "description": "Author pytest tests using a temporary/in-memory SQLite database and FastAPI TestClient, with fixtures for the app, client, and API key. Cover: successful creation and response shape, 7-char base62 code, short_url prefix, invalid URLs (malformed, ftp/javascript scheme, missing host, >2048 chars) with no record created, expiration validation (both fields, past expires_at, non-positive ttl), TTL-derived expires_at, same URL twice yielding different codes, 302 redirect with Location, click count after N redirects and non-null last_accessed_at, concurrent redirects (e.g. 50 parallel requests) giving an exact count, unknown code 404, expired code 410 with no increment, delete flow (204, then redirect 404 with no increment, idempotent second delete 204, unknown 404), stats for unknown/deactivated/expired codes, auth failures on stats and DELETE, collision retry behavior, and consistent error JSON structure without stack traces.",
+      "error": null,
+      "id": "t5",
+      "input_refs": [],
+      "max_retries": 2,
+      "name": "Write pytest test suite",
+      "output_refs": [],
+      "recovery_feedback": null,
+      "retry_count": 0,
+      "status": "pending",
+      "updated_at": "2026-11-03T04:33:11.307428Z"
+    },
+    {
+      "acceptance_criteria": [
+        "pytest runs and all tests pass",
+        "Any failures are reported with the failing test names and reasons"
+      ],
+      "agent": "testing",
+      "created_at": "2026-11-03T04:33:11.307437Z",
+      "depends_on": [
+        "t5"
+      ],
+      "description": "Propose and, after human approval, run pytest for the whole suite and report any failures against the acceptance criteria.",
+      "error": null,
+      "id": "t6",
+      "input_refs": [],
+      "max_retries": 1,
+      "name": "Run the test suite and validate",
+      "output_refs": [],
+      "recovery_feedback": null,
+      "retry_count": 0,
+      "status": "pending",
+      "updated_at": "2026-11-03T04:33:11.307438Z"
+    },
+    {
+      "acceptance_criteria": [
+        "README documents setup, running, and configuration",
+        "All endpoints are documented with request and response examples",
+        "Assumptions, auth behavior, and future improvements are listed",
+        "Instructions for running the test suite are included"
+      ],
+      "agent": "documentation",
+      "created_at": "2026-11-03T04:33:11.307447Z",
+      "depends_on": [
+        "t4"
+      ],
+      "description": "Write a README covering setup, running the service, environment variable configuration (BASE_URL, DATABASE_URL, API_KEY, MAX_URL_LENGTH, code length), API endpoints with curl examples and example responses, the error format, API-key behavior including when no key is configured, how to run tests, and all assumptions and out-of-scope or future items (rate limiting, malicious-URL scanning, custom aliases, PostgreSQL swap).",
+      "error": null,
+      "id": "t7",
+      "input_refs": [],
+      "max_retries": 1,
+      "name": "Write README documentation",
+      "output_refs": [],
+      "recovery_feedback": null,
+      "retry_count": 0,
+      "status": "pending",
+      "updated_at": "2026-11-03T04:33:11.307447Z"
+    }
+  ],
+  "workflow_id": "workflow_f35852877272"
+}

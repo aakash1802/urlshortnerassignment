@@ -1,0 +1,48 @@
+{
+  "decisions": [
+    {
+      "approval_type": "specification",
+      "artifact_ref": "spec_28dc61c510",
+      "comment": null,
+      "created_at": "2026-11-03T04:31:47.284428Z",
+      "decided_at": "2026-11-03T04:32:52.828680Z",
+      "decision": "approved",
+      "id": "appr_cb220a16bb",
+      "requested_action": "Approve generated specification for engineering planning",
+      "workflow_id": "workflow_f35852877272"
+    },
+    {
+      "approval_type": "plan",
+      "artifact_ref": "plan_f869d00cb4",
+      "comment": null,
+      "created_at": "2026-11-03T04:33:11.346905Z",
+      "decided_at": "2026-11-03T04:34:02.087027Z",
+      "decision": "approved",
+      "id": "appr_6731f78224",
+      "requested_action": "Approve engineering plan for execution",
+      "workflow_id": "workflow_f35852877272"
+    },
+    {
+      "approval_type": "command",
+      "artifact_ref": "cmd_140f6ec0c5",
+      "comment": null,
+      "created_at": "2026-11-03T04:41:22.766713Z",
+      "decided_at": "2026-11-03T04:53:19.012692Z",
+      "decision": "approved",
+      "id": "appr_72f99d823c",
+      "requested_action": "Run command: python -m pytest -rfE --tb=short \u2014 Runs the full pytest suite (configured via pytest.ini with testpaths=tests) to verify creation, validation, redirect, click counting, stats, expiration, deactivation, auth, and concurrency behavior. The -rfE flag adds a short summary of failed/errored tests with their names and reasons, matching the acceptance criteria.",
+      "workflow_id": "workflow_f35852877272"
+    },
+    {
+      "approval_type": "release",
+      "artifact_ref": "workflow_f35852877272",
+      "comment": null,
+      "created_at": "2026-11-03T04:53:56.060585Z",
+      "decided_at": "2026-11-03T04:54:24.840499Z",
+      "decision": "approved",
+      "id": "appr_5e72c487d2",
+      "requested_action": "Approve release / mark workflow complete",
+      "workflow_id": "workflow_f35852877272"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "task_id": "t5_s1",
+  "attempt": 1,
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "stop_reason": "tool_use",
+  "token_usage": {
+    "input_tokens": 18786,
+    "output_tokens": 8004
+  },
+  "response_type": "structured_json",
+  "parsing_outcome": "ok",
+  "validation_outcome": "ok",
+  "failure_category": null,
+  "retry_decision": "commit",
+  "recorded_at": "2026-11-03T04:39:14.431423+00:00",
+  "extra": {
+    "batch_index": 0,
+    "files": [
+      "pytest.ini",
+      "tests/__init__.py",
+      "tests/conftest.py",
+      "tests/test_api.py"
+    ]
+  }
+}
