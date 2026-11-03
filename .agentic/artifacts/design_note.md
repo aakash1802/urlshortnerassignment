@@ -1,6 +1,6 @@
 # Design note
 
-Design note (greenfield) for plan plan_f869d00cb4
-Summary: Plan for a FastAPI + SQLAlchemy/SQLite URL shortener with click analytics, expiration, soft delete and API-key-protected management endpoints. Starts with architecture and scaffolding, then builds persistence and service logic, then the API layer. Tests are authored by a developer task and run by a testing task, with documentation written in parallel.
-Top-level entries: (empty)
+Design note (brownfield) for plan plan_bbf60b3f17
+Summary: Locate the project's existing entry point, create a minimal runproject.py launcher in the project root with a __main__ guard that delegates to it and propagates the exit status, add tests for import-safety and launch behavior, then run validation.
+Top-level entries: .pytest_cache, README.md, app, pytest.ini, requirements.txt, tests
 Approach: apply scoped Workspace edits per task; gate all shell via CommandRunner.

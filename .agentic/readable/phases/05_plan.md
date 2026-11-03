@@ -1,63 +1,48 @@
 # Engineering plan
 
-- Plan id: `plan_f869d00cb4`
-- Workflow: `workflow_f35852877272`
-- Specification: `spec_28dc61c510`
+- Plan id: `plan_bbf60b3f17`
+- Workflow: `workflow_d8505bc55d5a`
+- Specification: `spec_8b186bd7e0`
 - Status: `plan_approved`
-- Created: `2026-11-03T04:33:11.307509+00:00`
+- Created: `2026-11-03T05:02:52.845511+00:00`
 
 ## Summary
 
-Plan for a FastAPI + SQLAlchemy/SQLite URL shortener with click analytics, expiration, soft delete and API-key-protected management endpoints. Starts with architecture and scaffolding, then builds persistence and service logic, then the API layer. Tests are authored by a developer task and run by a testing task, with documentation written in parallel.
+Locate the project's existing entry point, create a minimal runproject.py launcher in the project root with a __main__ guard that delegates to it and propagates the exit status, add tests for import-safety and launch behavior, then run validation.
 
 ## Tasks
 
 ```text
-t1: Design architecture and module layout
+t1: Identify existing entry point and design launcher
   depends_on: (none)
   agent: architecture  status: pending
-t2: Scaffold project, configuration, DB setup and error handling
+t2: Create runproject.py launcher
   depends_on: t1
   agent: developer  status: pending
-t3: Implement repository and service layer
+t3: Write tests for runproject.py
   depends_on: t2
   agent: developer  status: pending
-t4: Implement API routes and API-key authentication
+t4: Run tests and validate launcher
   depends_on: t3
-  agent: developer  status: pending
-t5: Write pytest test suite
-  depends_on: t4
-  agent: developer  status: pending
-t6: Run the test suite and validate
-  depends_on: t5
   agent: testing  status: pending
-t7: Write README documentation
-  depends_on: t4
-  agent: documentation  status: pending
 ```
 
 ## Dependency graph (Mermaid)
 
 ```mermaid
 flowchart TD
-  t1["t1: Design architecture and module layout"]
-  t2["t2: Scaffold project, configuration, DB setup and error handling"]
-  t3["t3: Implement repository and service layer"]
-  t4["t4: Implement API routes and API-key authentication"]
-  t5["t5: Write pytest test suite"]
-  t6["t6: Run the test suite and validate"]
-  t7["t7: Write README documentation"]
+  t1["t1: Identify existing entry point and design launcher"]
+  t2["t2: Create runproject.py launcher"]
+  t3["t3: Write tests for runproject.py"]
+  t4["t4: Run tests and validate launcher"]
   t1 --> t2
   t2 --> t3
   t3 --> t4
-  t4 --> t5
-  t5 --> t6
-  t4 --> t7
 ```
 
 ## Ready set (initial)
 
-- `t1` — Design architecture and module layout
+- `t1` — Identify existing entry point and design launcher
 
 ## Parallel cohorts (simulated)
 
@@ -65,5 +50,3 @@ flowchart TD
 - Cohort 1: `t2`
 - Cohort 2: `t3`
 - Cohort 3: `t4`
-- Cohort 4: `t5`, `t7`
-- Cohort 5: `t6`

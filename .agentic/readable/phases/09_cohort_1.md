@@ -1,6 +1,6 @@
 # Sync cohort 1
 
-- Workflow: `workflow_f35852877272`
+- Workflow: `workflow_d8505bc55d5a`
 - Cohort tasks: `t2`
 
 ## Task statuses

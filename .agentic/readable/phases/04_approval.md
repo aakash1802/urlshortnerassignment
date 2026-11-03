@@ -1,9 +1,9 @@
 # Approval decision
 
-- Workflow: `workflow_f35852877272`
+- Workflow: `workflow_d8505bc55d5a`
 - Status: `spec_approved`
 - Decision: `approved`
-- Specification: `spec_28dc61c510`
+- Specification: `spec_8b186bd7e0`
 - Plan: `(none)`
 
 See also:
